@@ -8,11 +8,14 @@ from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QAction, QIcon
 from .canvas import VisualizationCanvas
+from ..admin.hardware_admin import HardwareAdminDialog
+from ..db_manager import DBManager
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.db_manager = DBManager()  # Initialize database manager
         self.setWindowTitle("VisualFurnitura - Программа визуализации установки фурнитуры")
         self.setGeometry(100, 100, 1400, 900)
         
@@ -157,6 +160,13 @@ class MainWindow(QMainWindow):
         action_exit.triggered.connect(self.close)
         file_menu.addAction(action_exit)
         
+        # Administration menu
+        admin_menu = menu_bar.addMenu("Администрирование")
+        
+        action_admin = QAction("Управление фурнитурой", self)
+        action_admin.triggered.connect(self.open_admin_dialog)
+        admin_menu.addAction(action_admin)
+        
         # View menu
         view_menu = menu_bar.addMenu("Вид")
         
@@ -175,6 +185,11 @@ class MainWindow(QMainWindow):
         action_reset_zoom.triggered.connect(self.canvas.reset_zoom)
         view_menu.addAction(action_reset_zoom)
 
+    def open_admin_dialog(self):
+        """Open the hardware administration dialog"""
+        admin_dialog = HardwareAdminDialog(self.db_manager, self)
+        admin_dialog.exec()
+
     def create_toolbar(self):
         """Create application toolbar"""
         toolbar = self.addToolBar("Основная панель инструментов")
@@ -191,6 +206,14 @@ class MainWindow(QMainWindow):
         action_reset_zoom = QAction("Сброс", self)
         action_reset_zoom.triggered.connect(self.canvas.reset_zoom)
         toolbar.addAction(action_reset_zoom)
+        
+        # Add separator and admin action
+        toolbar.addSeparator()
+        
+        action_admin = QAction("Админ", self)
+        action_admin.setToolTip("Управление фурнитурой")
+        action_admin.triggered.connect(self.open_admin_dialog)
+        toolbar.addAction(action_admin)
 
     def on_zoom_changed(self, value):
         """Handle zoom level changes"""

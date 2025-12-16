@@ -265,6 +265,44 @@ class DBManager:
         conn.close()
         return results
 
+    def update_profile_system(self, system_id: int, data: Dict):
+        """Update a profile system"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        cursor.execute('''
+            UPDATE profile_systems SET
+                name = ?,
+                description = ?,
+                axis_offset = ?,
+                sash_thickness = ?,
+                frame_width = ?,
+                sash_width = ?,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        ''', (
+            data.get('name'),
+            data.get('description'),
+            data.get('axis_offset'),
+            data.get('sash_thickness'),
+            data.get('frame_width'),
+            data.get('sash_width'),
+            system_id
+        ))
+
+        conn.commit()
+        conn.close()
+
+    def delete_profile_system(self, system_id: int):
+        """Delete a profile system"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        cursor.execute('DELETE FROM profile_systems WHERE id = ?', (system_id,))
+
+        conn.commit()
+        conn.close()
+
     def add_order(self, data: Dict) -> int:
         """Add a new order to the database"""
         conn = sqlite3.connect(self.db_path)

@@ -442,14 +442,11 @@ class HardwareAdminDialog(QDialog):
             if id_item:
                 profile_id = int(id_item.text())
                 
-                # In a real implementation, we'd have an update method for profiles
-                # For now, we'll recreate the profile
                 try:
-                    # We'll remove the old one and add a new one since our DB manager doesn't have update method for profiles
-                    # Actually, let's implement this properly - first we'll modify the DB manager to include update functionality
-                    # But for now, we'll just show a message that it's not implemented
-                    QMessageBox.information(self, "Информация", "Обновление профильных систем будет реализовано в следующей версии.")
-                    return
+                    self.db_manager.update_profile_system(profile_id, data)
+                    QMessageBox.information(self, "Успех", "Система профиля успешно обновлена!")
+                    self.refresh_tables()
+                    self.clear_profile_form()
                 except Exception as e:
                     QMessageBox.critical(self, "Ошибка", f"Ошибка при обновлении системы: {str(e)}")
                 return
@@ -465,7 +462,31 @@ class HardwareAdminDialog(QDialog):
 
     def delete_profile(self):
         """Delete selected profile system"""
-        QMessageBox.information(self, "Информация", "Удаление систем профиля будет реализовано в следующей версии.")
+        selected_items = self.profile_table.selectedItems()
+        if not selected_items:
+            QMessageBox.warning(self, "Ошибка", "Выберите систему профиля для удаления!")
+            return
+
+        row = selected_items[0].row()
+        id_item = self.profile_table.item(row, 0)
+        if not id_item:
+            return
+
+        profile_id = int(id_item.text())
+        reply = QMessageBox.question(
+            self, "Подтверждение", 
+            f"Вы действительно хотите удалить систему профиля с ID {profile_id}?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+
+        if reply == QMessageBox.StandardButton.Yes:
+            try:
+                self.db_manager.delete_profile_system(profile_id)
+                QMessageBox.information(self, "Успех", "Система профиля успешно удалена!")
+                self.refresh_tables()
+                self.clear_profile_form()
+            except Exception as e:
+                QMessageBox.critical(self, "Ошибка", f"Ошибка при удалении системы: {str(e)}")
 
     def on_profile_selection_changed(self):
         """Handle profile table selection change"""
