@@ -1,45 +1,7 @@
 ```
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.py~
-
-# Database
+# Database files
 *.db
-*.sqlite
-*.sqlite3
 
-# PDF and test reports
-test_reports/
-
-# Dependencies
-venv/
-.venv/
-env/
-.ENV
-
-# Logs
-*.log
-
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Coverage
-.coverage
-htmlcov/
-coverage/
-
-# Build artifacts
-build/
-dist/
-*.egg-info/
+# PDF reports
+**/test_reports/*.pdf
 ```
